@@ -27,6 +27,18 @@ def sha1_file(filename):
         return s.hexdigest()
 
 
+def str_size(size):
+    if size < 2 ** 10:
+        return '%d B' % size
+    if size < 2 ** 20:
+        return '%.2f KB' % (size / (2 ** 10))
+    if size < 2 ** 30:
+        return '%.2f MB' % (size / (2 ** 20))
+    if size < 2 ** 40:
+        return '%.2f GB' % (size / (2 ** 30))
+    return '%.2f TB' % (size / (2 ** 40))
+
+
 # Create user directory if not exists
 
 if not os.path.exists(CACHE_DIR):
