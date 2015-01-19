@@ -149,6 +149,13 @@ class Directory(object):
             self._meta.write(fp)
 
     # Utils
+    def is_file_in(self, filename):
+        hashfile = sha1_file(filename)
+        self._db.execute('SELECT filename FROM files WHERE hash = ?',
+                         (hashfile,))
+        return [os.path.join(self._path, row[0])
+                for row in self._db.fetchall()]
+
     def list_files(self, dirname=''):
         path = os.path.join(self._path, dirname)
         follow_link = self.is_option_follow_link()
