@@ -93,6 +93,12 @@ class Directory(object):
             self._meta.add_section('options')
             self._meta.set('options', 'follow_link', 'False')
             self.save_meta()
+        if not self._meta.has_section('duplicated'):
+            self._meta.add_section('duplicated')
+            self._meta.set('duplicated', 'hash', '0')
+            self._meta.set('duplicated', 'files', '0')
+            self._meta.set('duplicated', 'size', '0')
+            self.save_meta()
 
         if os.path.exists(self.get_excludefilename()):
             with open(self.get_excludefilename()) as fp:
@@ -164,6 +170,20 @@ class Directory(object):
             file_stat = os.stat(abs_filename)
             yield partial_filename, file_stat.st_mtime, file_stat.st_size
 
+    def update_duplicated(self):
+        d_hash = 0
+        d_files = 0
+        d_size = 0
+        for step in self.get_duplicated():
+            d_hash += 1
+            files = len(step[2])
+            d_files += files
+            d_size += (files - 1) * step[1]
+        self._meta.set('duplicated', 'hash', str(d_hash))
+        self._meta.set('duplicated', 'files', str(d_files))
+        self._meta.set('duplicated', 'size', str(d_size))
+        self.save_meta()
+
     # Steps
     def update_tree(self):
         insert = 0
@@ -203,6 +223,7 @@ class Directory(object):
         self._db.execute('SELECT filename FROM files WHERE exist = 1')
         for filename in self._db.fetchall():
             yield filename[0]
+        self.update_duplicated()
 
     def update_hash(self, filename):
         abs_filename = os.path.join(str(self), filename)
