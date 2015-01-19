@@ -6,6 +6,7 @@
 
 from __future__ import unicode_literals
 
+from datetime import datetime
 from glob import glob
 from hashlib import sha1
 import os
@@ -88,6 +89,7 @@ class Directory(object):
         if not self._meta.has_section('META'):
             self._meta.add_section('META')
             self._meta.set('META', 'path', path)
+            self._meta.set('META', 'lastupdate', '')
             self.save_meta()
         if not self._meta.has_section('options'):
             self._meta.add_section('options')
@@ -138,6 +140,16 @@ class Directory(object):
             fp.write('\n'.join(self.exclude))
 
     # Meta
+    def get_lastupdate(self):
+        lastupdate = self._meta.get('META', 'lastupdate')
+        if lastupdate:
+            return datetime.strptime(lastupdate, '%Y-%m-%d %H:%M:%S')
+        return None
+
+    def now_lastupdate(self):
+        return self._meta.set('META', 'lastupdate',
+                              datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+
     def set_option_follow_link(self, value):
         self._meta.set('options', 'follow_link', str(value))
 
