@@ -133,6 +133,41 @@ class Directory(object):
             file_stat = os.stat(abs_filename)
             yield partial_filename, file_stat.st_mtime, file_stat.st_size
 
+    # Steps
+    def update_tree(self):
+        insert = 0
+        update = 0
+        self._db.execute('UPDATE files SET exist = 0')
+        for partial_filename, mtime, size in self.list_files():
+            self._db.execute('SELECT mtime, size FROM files '
+                             'WHERE filename = ?', (partial_filename,))
+            row = self._db.fetchone()
+
+            # New file
+            if row is None:
+                self._db.execute('INSERT INTO files (filename, mtime, size, '
+                                 'hash, exist) VALUES (?, NULL, ?, NULL, 1)',
+                                 (partial_filename, size))
+                insert += 1
+                continue
+
+            # Update file
+            if mtime != row[0] or size != row[1]:
+                self._db.execute('UPDATE files SET mtime = NULL, size = ?, '
+                                 'hash = NULL, exist = 1 WHERE filename = ?',
+                                 (size, partial_filename))
+                update += 1
+                continue
+
+            # Unmodified file
+            self._db.execute('UPDATE files SET exist = 2 WHERE filename = ?',
+                             (partial_filename,))
+
+        self._db.execute('DELETE FROM files WHERE exist = 0')
+        delete = self._db.rowcount
+        self.save_database()
+        return insert, update, delete
+
 
 # Create user directory if not exists
 
