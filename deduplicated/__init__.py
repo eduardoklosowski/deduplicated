@@ -53,6 +53,9 @@ class Directory(object):
             self.get_hash(),
         )
 
+    def __str__(self):
+        return self._path
+
     def get_hash(self):
         return sha1(self._path.encode('utf-8')).hexdigest()
 
