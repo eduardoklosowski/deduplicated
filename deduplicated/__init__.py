@@ -89,6 +89,10 @@ class Directory(object):
             self._meta.add_section('META')
             self._meta.set('META', 'path', path)
             self.save_meta()
+        if not self._meta.has_section('options'):
+            self._meta.add_section('options')
+            self._meta.set('options', 'follow_link', 'False')
+            self.save_meta()
 
         if os.path.exists(self.get_excludefilename()):
             with open(self.get_excludefilename()) as fp:
@@ -128,6 +132,12 @@ class Directory(object):
             fp.write('\n'.join(self.exclude))
 
     # Meta
+    def set_option_follow_link(self, value):
+        self._meta.set('options', 'follow_link', str(value))
+
+    def is_option_follow_link(self):
+        return self._meta.getboolean('options', 'follow_link')
+
     def save_meta(self):
         with open(self.get_metafilename(), 'w') as fp:
             self._meta.write(fp)
