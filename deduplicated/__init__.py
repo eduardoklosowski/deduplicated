@@ -6,6 +6,7 @@
 
 from __future__ import unicode_literals
 
+from glob import glob
 from hashlib import sha1
 import os
 
@@ -46,6 +47,27 @@ def str_size(size):
 
 
 # Directory
+
+def directory_delete(hashcache):
+    for filename in glob(os.path.join(CACHE_DIR, hashcache + '.*')):
+        os.remove(filename)
+
+
+def directory_get(hashcache):
+    config = ConfigParser()
+    if not config.read([os.path.join(CACHE_DIR, hashcache + '.meta')]):
+        raise IOError('hash directory not found')
+    return Directory(config.get('META', 'path'))
+
+
+def directory_list():
+    for filename in os.listdir(CACHE_DIR):
+        if not filename.endswith('.meta'):
+            continue
+        meta = ConfigParser()
+        meta.read([os.path.join(CACHE_DIR, filename)])
+        yield filename[:-5], meta.get('META', 'path')
+
 
 class Directory(object):
     def __init__(self, path):
