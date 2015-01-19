@@ -168,6 +168,20 @@ class Directory(object):
         self.save_database()
         return insert, update, delete
 
+    def hash_for_update(self):
+        self._db.execute('SELECT filename FROM files WHERE exist = 1')
+        for filename in self._db.fetchall():
+            yield filename[0]
+
+    def update_hash(self, filename):
+        abs_filename = os.path.join(str(self), filename)
+        stat = os.stat(abs_filename)
+        self._db.execute('UPDATE files SET mtime = ?, size = ?, '
+                         'hash = ?, exist = 2 WHERE filename = ?',
+                         (stat.st_mtime, stat.st_size,
+                          sha1_file(abs_filename), filename))
+        self.save_database()
+
 
 # Create user directory if not exists
 
