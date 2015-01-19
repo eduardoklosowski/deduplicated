@@ -182,6 +182,16 @@ class Directory(object):
                           sha1_file(abs_filename), filename))
         self.save_database()
 
+    def get_duplicated(self):
+        self._db.execute('SELECT hash, COUNT(hash) FROM files GROUP BY hash '
+                         'ORDER BY size ASC')
+        for row in self._db.fetchall():
+            if row[1] > 1:
+                self._db.execute('SELECT filename, size FROM files '
+                                 'WHERE hash = ?', (row[0],))
+                files = self._db.fetchall()
+                yield row[0], files[0][1], [f[0] for f in files]
+
 
 # Create user directory if not exists
 
