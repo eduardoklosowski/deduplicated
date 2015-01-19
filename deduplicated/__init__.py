@@ -90,6 +90,12 @@ class Directory(object):
             self._meta.set('META', 'path', path)
             self.save_meta()
 
+        if os.path.exists(self.get_excludefilename()):
+            with open(self.get_excludefilename()) as fp:
+                self.exclude = fp.read().splitlines()
+        else:
+            self.exclude = []
+
         self._conn = sqlite3.connect(self.get_dbfilename())
         self._db = self._conn.cursor()
         self._db.execute('CREATE TABLE IF NOT EXISTS files '
@@ -106,12 +112,20 @@ class Directory(object):
     def get_dbfilename(self):
         return self._hashfile + '.db'
 
+    def get_excludefilename(self):
+        return self._hashfile + '.exclude'
+
     def get_metafilename(self):
         return self._hashfile + '.meta'
 
     # Database
     def save_database(self):
         self._conn.commit()
+
+    # Exclude
+    def save_exclude(self):
+        with open(self.get_excludefilename(), 'w') as fp:
+            fp.write('\n'.join(self.exclude))
 
     # Meta
     def save_meta(self):
