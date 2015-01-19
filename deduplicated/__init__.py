@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 from glob import glob
 from hashlib import sha1
 import os
+import sqlite3
 
 # workaround for Python 2
 try:
@@ -89,6 +90,12 @@ class Directory(object):
             self._meta.set('META', 'path', path)
             self.save_meta()
 
+        self._conn = sqlite3.connect(self.get_dbfilename())
+        self._db = self._conn.cursor()
+        self._db.execute('CREATE TABLE IF NOT EXISTS files '
+                         '(filename TEXT PRIMARY KEY, mtime FLOAT, size INT, '
+                         'hash TEXT, exist INT)')
+
     def __str__(self):
         return self._path
 
@@ -96,8 +103,15 @@ class Directory(object):
         return sha1(self._path.encode('utf-8')).hexdigest()
 
     # Path for files
+    def get_dbfilename(self):
+        return self._hashfile + '.db'
+
     def get_metafilename(self):
         return self._hashfile + '.meta'
+
+    # Database
+    def save_database(self):
+        self._conn.commit()
 
     # Meta
     def save_meta(self):
