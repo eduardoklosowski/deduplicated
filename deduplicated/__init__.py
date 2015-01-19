@@ -242,7 +242,9 @@ class Directory(object):
         self._db.execute('SELECT filename FROM files WHERE exist = 1')
         for filename in self._db.fetchall():
             yield filename[0]
+        self.now_lastupdate()
         self.update_duplicated()
+        self.save_meta()
 
     def update_hash(self, filename):
         abs_filename = os.path.join(str(self), filename)
