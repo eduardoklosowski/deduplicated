@@ -139,6 +139,9 @@ class Directory(object):
             partial_filename = os.path.join(dirname, filename)
             abs_filename = os.path.join(self._path, partial_filename)
 
+            if partial_filename in self.exclude:
+                continue
+
             if os.path.isdir(abs_filename):
                 for f in self.list_files(partial_filename):
                     yield f
