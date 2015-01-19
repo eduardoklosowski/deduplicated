@@ -104,6 +104,21 @@ class Directory(object):
         with open(self.get_metafilename(), 'w') as fp:
             self._meta.write(fp)
 
+    # Utils
+    def list_files(self, dirname=''):
+        path = os.path.join(self._path, dirname)
+        for filename in sorted(os.listdir(path)):
+            partial_filename = os.path.join(dirname, filename)
+            abs_filename = os.path.join(self._path, partial_filename)
+
+            if os.path.isdir(abs_filename):
+                for f in self.list_files(partial_filename):
+                    yield f
+                continue
+
+            file_stat = os.stat(abs_filename)
+            yield partial_filename, file_stat.st_mtime, file_stat.st_size
+
 
 # Create user directory if not exists
 
