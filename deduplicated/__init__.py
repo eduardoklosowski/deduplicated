@@ -145,11 +145,15 @@ class Directory(object):
     # Utils
     def list_files(self, dirname=''):
         path = os.path.join(self._path, dirname)
+        follow_link = self.is_option_follow_link()
         for filename in sorted(os.listdir(path)):
             partial_filename = os.path.join(dirname, filename)
             abs_filename = os.path.join(self._path, partial_filename)
 
             if partial_filename in self.exclude:
+                continue
+
+            if not follow_link and os.path.islink(abs_filename):
                 continue
 
             if os.path.isdir(abs_filename):
