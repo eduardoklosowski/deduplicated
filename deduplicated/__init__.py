@@ -39,6 +39,24 @@ def str_size(size):
     return '%.2f TB' % (size / (2 ** 40))
 
 
+# Directory
+
+class Directory(object):
+    def __init__(self, path):
+        path = os.path.abspath(path)
+        if not os.path.isdir(path):
+            raise IOError('%s is not valid directory' % path)
+
+        self._path = path
+        self._hashfile = os.path.join(
+            CACHE_DIR,
+            self.get_hash(),
+        )
+
+    def get_hash(self):
+        return sha1(self._path.encode('utf-8')).hexdigest()
+
+
 # Create user directory if not exists
 
 if not os.path.exists(CACHE_DIR):
