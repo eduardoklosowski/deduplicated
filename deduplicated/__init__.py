@@ -9,6 +9,12 @@ from __future__ import unicode_literals
 from hashlib import sha1
 import os
 
+# workaround for Python 2
+try:
+    from configparser import ConfigParser
+except ImportError:
+    from ConfigParser import ConfigParser
+
 
 # Global Vars
 
@@ -53,11 +59,28 @@ class Directory(object):
             self.get_hash(),
         )
 
+        self._meta = ConfigParser()
+        if os.path.exists(self.get_metafilename()):
+            self._meta.read([self.get_metafilename()])
+        if not self._meta.has_section('META'):
+            self._meta.add_section('META')
+            self._meta.set('META', 'path', path)
+            self.save_meta()
+
     def __str__(self):
         return self._path
 
     def get_hash(self):
         return sha1(self._path.encode('utf-8')).hexdigest()
+
+    # Path for files
+    def get_metafilename(self):
+        return self._hashfile + '.meta'
+
+    # Meta
+    def save_meta(self):
+        with open(self.get_metafilename(), 'w') as fp:
+            self._meta.write(fp)
 
 
 # Create user directory if not exists
