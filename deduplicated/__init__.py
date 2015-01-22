@@ -171,7 +171,11 @@ class Directory(object):
     def list_files(self, dirname=''):
         path = os.path.join(self._path, dirname)
         follow_link = self.is_option_follow_link()
-        for filename in sorted(os.listdir(path)):
+        try:
+            filenames = sorted(os.listdir(path))
+        except OSError:
+            filenames = []
+        for filename in filenames:
             partial_filename = os.path.join(dirname, filename)
             abs_filename = os.path.join(self._path, partial_filename)
 
