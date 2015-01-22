@@ -58,6 +58,11 @@ def print_duplicated(directory):
     for hashfile, size, files in directory.get_duplicated():
         print('%s [%s]' % (str_size(size), hashfile))
         print('    %s' % '\n    '.join(files))
+    print('%d hashs (%d files) %s' % (
+        directory.get_duplicated_hash(),
+        directory.get_duplicated_files(),
+        str_size(directory.get_duplicated_size()),
+    ))
 
 
 def main():
