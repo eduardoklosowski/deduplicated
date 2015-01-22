@@ -28,6 +28,11 @@ parser_duplicated = subparsers.add_parser('duplicated',
                                           help='list duplicated')
 parser_duplicated.add_argument('duplicated', nargs='+')
 
+# check command
+parser_check = subparsers.add_parser('check',
+                                     help='update and duplicated')
+parser_check.add_argument('check', nargs='+')
+
 # indir command
 parser_indir = subparsers.add_parser('indir',
                                      help='check file in dir')
@@ -70,6 +75,13 @@ def main():
             directory = Directory(dirname)
             print_duplicated(directory)
         sys.exit(0)
+
+    if hasattr(args, 'check'):
+        for dirname in args.check:
+            directory = Directory(dirname)
+            print_update_tree(directory)
+            print_update_hash(directory)
+            print_duplicated(directory)
 
     if hasattr(args, 'indir'):
         has = False
