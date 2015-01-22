@@ -140,6 +140,15 @@ class Directory(object):
             fp.write('\n'.join(self.exclude))
 
     # Meta
+    def get_duplicated_hash(self):
+        return self._meta.getint('duplicated', 'hash')
+
+    def get_duplicated_files(self):
+        return self._meta.getint('duplicated', 'files')
+
+    def get_duplicated_size(self):
+        return self._meta.getint('duplicated', 'size')
+
     def get_lastupdate(self):
         lastupdate = self._meta.get('META', 'lastupdate')
         if lastupdate:
