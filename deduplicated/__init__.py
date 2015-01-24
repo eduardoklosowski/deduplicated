@@ -177,6 +177,12 @@ class Directory(object):
         return [os.path.join(self._path, row[0])
                 for row in self._db.fetchall()]
 
+    def delete_file(self, filename):
+        self._db.execute('DELETE FROM files WHERE filename = ?', (filename,))
+        if self._db.rowcount:
+            os.remove(os.path.join(self._path, filename))
+            self.save_database()
+
     def list_files(self, dirname=''):
         path = os.path.join(self._path, dirname)
         follow_link = self.is_option_follow_link()
