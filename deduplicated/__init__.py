@@ -21,6 +21,7 @@ except ImportError:
 
 # Global Vars
 
+__version__ = '0.1a'
 CACHE_DIR = os.path.join(os.path.expanduser('~'), '.deduplicated')
 
 
