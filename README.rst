@@ -19,3 +19,6 @@ Exemple of use
 
   # Check if file in directory cache
   $ deduplicated indir myfile /path/for/check
+
+  # Start web version, connect http://127.0.0.1:5050
+  $ deduplicated-web
