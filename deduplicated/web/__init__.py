@@ -58,6 +58,14 @@ def dirdelete(dirhash):
     return redirect('/')
 
 
+@app.route('/dir/<dirhash>/deletefile', methods=['post'])
+def dirdeletefile(dirhash):
+    directory = directory_get(dirhash)
+    for filename in request.form.getlist('file'):
+        directory.delete_file(filename)
+    return redirect('/dir/%s' % dirhash)
+
+
 # Run
 
 def main():
