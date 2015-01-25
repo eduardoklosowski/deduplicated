@@ -1,0 +1,51 @@
+{% extends 'dirlist.html' %}
+
+{% block title %}{{ super() }} - {{ directory }}{% endblock %}
+{% block ptitle %}{{ super() }} - <a href="/dir/{{ directory.get_hash() }}">{{ directory }}</a>{% endblock %}
+
+{% block application %}
+  <section role="application">
+    <ul class="dirinfo">
+      <li><span class="title">Last update:</span> {{ directory.get_lastupdate()|default('-', true) }}</li>
+      <li>
+        <span class="title">Duplicated (hash/file/size):</span>
+        {{ directory.get_duplicated_hash() }} /
+        {{ directory.get_duplicated_files() }} /
+        {{ directory.get_duplicated_size()|str_size() }}
+      </li>
+    </ul>
+
+    <section class="box">
+      <header>Actions</header>
+      <ul class="actions">
+        <li><a href="/dir/{{ directory.get_hash() }}/update">Update</a></li>
+        <li><a href="/dir/{{ directory.get_hash() }}/delete" onclick="return confirm('Delete this directory cache?')">Delete</a></li>
+      </ul>
+    </section>
+
+    <form method="post" action="/dir/{{ directory.get_hash() }}/deletefile">
+      <table class="dirlist">
+        <thead>
+          <tr>
+            <th class="header" colspan="2">Files Duplicated</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for hashfile, size, files in directory.get_duplicated()|reverse %}
+            <tr>
+              <th>{{ size|str_size() }}</th>
+              <th>{{ hashfile }}</th>
+            </tr>
+            {% for filename in files %}
+              <tr><td colspan="2">
+                <input type="checkbox" name="file" value="{{ filename }}">
+                {{ filename }}
+                </td></tr>
+            {% endfor %}
+          {% endfor %}
+        </tbody>
+      </table>
+      <button type="submit">Delete Files</button>
+    </form>
+  </section>
+{% endblock %}

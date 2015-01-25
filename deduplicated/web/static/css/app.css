@@ -53,6 +53,10 @@ section[class=box] {
   background-color: #def;
 }
 
+ul[class=actions] {
+  margin: 1rem 0;
+}
+
 .diradd {
   padding: 1rem;
   text-align: center;
@@ -83,4 +87,19 @@ section[class=box] {
 .dirlist .dirduplicatedfiles,
 .dirlist .dirduplicatedsize {
   text-align: right;
+}
+
+.dirinfo {
+  margin: 0 0 1rem;
+  padding: 0;
+  text-align: center;
+  list-style: none;
+}
+
+.dirinfo li {
+  display: inline;
+}
+
+.dirinfo .title {
+  font-weight: bold;
 }

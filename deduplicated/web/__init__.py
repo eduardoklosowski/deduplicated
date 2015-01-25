@@ -7,7 +7,7 @@
 from flask import Flask, redirect, render_template, request
 import jinja2
 
-from .. import Directory, directory_list, str_size
+from .. import Directory, directory_get, directory_list, str_size
 
 
 # Init app
@@ -32,6 +32,11 @@ def diradd():
     if dirname:
         Directory(dirname)
     return redirect('/')
+
+
+@app.route('/dir/<dirhash>')
+def dirinfo(dirhash):
+    return render_template('dirinfo.html', directory=directory_get(dirhash))
 
 
 # Run
