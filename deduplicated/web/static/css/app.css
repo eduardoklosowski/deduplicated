@@ -103,3 +103,14 @@ ul[class=actions] {
 .dirinfo .title {
   font-weight: bold;
 }
+
+.dirstatus {
+  margin: 1rem 0;
+  padding: 0;
+  text-align: center;
+  list-style: none;
+}
+
+.dirstatus li {
+  display: inline;
+}

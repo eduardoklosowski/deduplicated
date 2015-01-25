@@ -1,0 +1,32 @@
+{% extends 'dirinfo.html' %}
+
+{% block application %}
+  <section role="application">
+    <section class="box">
+      <header>Files</header>
+      <ul class="dirstatus">
+        <li>+{{ outtree[0] }}</li>
+        <li>~{{ outtree[1] }}</li>
+        <li>-{{ outtree[2] }}</li>
+      </ul>
+    </section>
+    
+    <table class="dirlist">
+      <thead>
+        <tr>
+          <th class="header">Update Hash</th>
+        </tr>
+        <tr>
+          <th>File</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for filename in outhash %}
+          <tr>
+            <td>{{ filename }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endblock %}

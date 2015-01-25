@@ -39,6 +39,18 @@ def dirinfo(dirhash):
     return render_template('dirinfo.html', directory=directory_get(dirhash))
 
 
+@app.route('/dir/<dirhash>/update')
+def dirupdate(dirhash):
+    directory = directory_get(dirhash)
+    outtree = directory.update_tree()
+    outhash = list(directory.hash_for_update())
+    [directory.update_hash(i) for i in outhash]
+    return render_template('dirupdate.html',
+                           directory=directory,
+                           outtree=outtree,
+                           outhash=outhash)
+
+
 # Run
 
 def main():
