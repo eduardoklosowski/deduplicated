@@ -17,6 +17,10 @@ input {
   border: .2rem solid #aaa;
 }
 
+textarea {
+  border: .2rem solid #aaa;
+}
+
 button {
   height: 2.6rem;
   padding: .1rem .6rem;
@@ -60,6 +64,10 @@ ul[class=actions] {
 .diradd {
   padding: 1rem;
   text-align: center;
+}
+
+.diroption {
+  margin: 1rem;
 }
 
 .dirlist {

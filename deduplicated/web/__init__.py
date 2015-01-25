@@ -40,6 +40,16 @@ def dirinfo(dirhash):
     return render_template('dirinfo.html', directory=directory_get(dirhash))
 
 
+@app.route('/dir/<dirhash>/option', methods=['post'])
+def diroption(dirhash):
+    directory = directory_get(dirhash)
+    directory.set_option_follow_link('followlink' in request.form)
+    directory.save_meta()
+    directory.exclude = request.form.get('exclude', '').splitlines()
+    directory.save_exclude()
+    return redirect('/dir/%s' % dirhash)
+
+
 @app.route('/dir/<dirhash>/update')
 def dirupdate(dirhash):
     directory = directory_get(dirhash)

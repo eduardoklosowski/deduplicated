@@ -23,6 +23,18 @@
       </ul>
     </section>
 
+    <section class="box">
+      <header>Options</header>
+      <form class="diroption" method="post" action="/dir/{{ directory.get_hash() }}/option">
+        <ul class="actions">
+          <li>
+            <input type="checkbox" name="followlink" {% if directory.is_option_follow_link() %}checked{% endif %}>Follow Links</li>
+          <li>Excludes:<textarea name="exclude">{{ directory.exclude|join('\n') }}</textarea></li>
+        </ul>
+        <button type="submit">Save</button>
+      </form>
+    </section>
+
     <form method="post" action="/dir/{{ directory.get_hash() }}/deletefile">
       <table class="dirlist">
         <thead>
