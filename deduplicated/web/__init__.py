@@ -4,7 +4,7 @@
 # License: MIT (see LICENSE for details)
 #
 
-from flask import Flask, render_template
+from flask import Flask, redirect, render_template, request
 import jinja2
 
 from .. import Directory, directory_list, str_size
@@ -24,6 +24,14 @@ def dirlist():
     directories = [(d[0], Directory(d[1])) for d in directory_list()]
     directories.sort(key=lambda d: str(d[1]).lower())
     return render_template('dirlist.html', directories=directories)
+
+
+@app.route('/dir/add', methods=['post'])
+def diradd():
+    dirname = request.form.get('directory', '')
+    if dirname:
+        Directory(dirname)
+    return redirect('/')
 
 
 # Run
