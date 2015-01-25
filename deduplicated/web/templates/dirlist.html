@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}Deduplicated{% endblock %}</title>
+    {% block css %}
+      <link rel="stylesheet" href="/static/css/normalize.css">
+      <link rel="stylesheet" href="/static/css/app.css">
+    {% endblock %}
+  </head>
+  <body>
+    <header>
+      <h1>{% block ptitle %}<a href="/">Deduplicated</a>{% endblock %}</h1>
+    </header>
+    {% block application %}
+      <section role="application">
+        <section class="box">
+          <header>Add Directory</header>
+          <form class="diradd" method="post" action="dir/add">
+            Directory:
+            <input type="text" name="directory">
+            <button type="submit">Add</button>
+          </form>
+        </section>
+
+        <table class="dirlist">
+          <thead>
+            <tr>
+              <th class="header" colspan="5">Directories</th>
+            </tr>
+            <tr>
+              <th rowspan="2">Directory</th>
+              <th rowspan="2">Last Update</th>
+              <th colspan="3">Duplicated</th>
+            </tr>
+            <tr>
+              <th>Hash</th>
+              <th>Files</th>
+              <th>Size</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for dirhash, directory in directories %}
+              <tr>
+                <td><a href="/dir/{{ dirhash }}">{{ directory }}</a></td>
+                <td>{{ directory.get_lastupdate()|default('-', true) }}</td>
+                <td class="dirduplicatedhash">{{ directory.get_duplicated_hash() }}</td>
+                <td class="dirduplicatedfiles">{{ directory.get_duplicated_files() }}</td>
+                <td class="dirduplicatedsize">{{ directory.get_duplicated_size()|str_size }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    {% endblock %}
+  </body>
+</html>
