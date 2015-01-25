@@ -13,9 +13,16 @@ setup(
     license='MIT',
     packages=find_packages(),
     zip_safe=False,
+    extras_require={
+        'web': ['Flask', 'gunicorn'],
+    },
+    package_data={
+        'deduplicated.web': ['static/css/*.css', 'templates/*.html'],
+    },
     entry_points={
         'console_scripts': [
             'deduplicated = deduplicated.cmd:main',
+            'deduplicated-web = deduplicated.web:main [web]'
         ],
     },
 )
