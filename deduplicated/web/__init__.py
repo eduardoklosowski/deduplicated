@@ -7,7 +7,8 @@
 from flask import Flask, redirect, render_template, request
 import jinja2
 
-from .. import Directory, directory_get, directory_list, str_size
+from .. import (Directory, directory_delete, directory_get, directory_list,
+                str_size)
 
 
 # Init app
@@ -49,6 +50,12 @@ def dirupdate(dirhash):
                            directory=directory,
                            outtree=outtree,
                            outhash=outhash)
+
+
+@app.route('/dir/<dirhash>/delete')
+def dirdelete(dirhash):
+    directory_delete(dirhash)
+    return redirect('/')
 
 
 # Run
