@@ -22,7 +22,8 @@ app = Flask(__name__)
 
 @app.route('/')
 def dirlist():
-    directories = [(d[0], Directory(d[1])) for d in directory_list()]
+    directories = [(d[0], Directory(d[1], checkvalid=False))
+                   for d in directory_list()]
     directories.sort(key=lambda d: str(d[1]).lower())
     return render_template('dirlist.html', directories=directories)
 
@@ -37,7 +38,8 @@ def diradd():
 
 @app.route('/dir/<dirhash>')
 def dirinfo(dirhash):
-    return render_template('dirinfo.html', directory=directory_get(dirhash))
+    return render_template('dirinfo.html',
+                           directory=directory_get(dirhash, checkvalid=False))
 
 
 @app.route('/dir/<dirhash>/option', methods=['post'])

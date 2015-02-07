@@ -56,11 +56,11 @@ def directory_delete(hashcache):
         os.remove(filename)
 
 
-def directory_get(hashcache):
+def directory_get(hashcache, checkvalid=True):
     config = ConfigParser()
     if not config.read([os.path.join(CACHE_DIR, hashcache + '.meta')]):
         raise IOError('hash directory not found')
-    return Directory(config.get('META', 'path'))
+    return Directory(config.get('META', 'path'), checkvalid=checkvalid)
 
 
 def directory_list():
@@ -73,12 +73,12 @@ def directory_list():
 
 
 class Directory(object):
-    def __init__(self, path):
+    def __init__(self, path, checkvalid=True):
         path = os.path.abspath(path)
-        if not os.path.isdir(path):
+        self._path = path
+        if checkvalid and not self.is_valid():
             raise IOError('%s is not valid directory' % path)
 
-        self._path = path
         self._hashfile = os.path.join(
             CACHE_DIR,
             self.get_hash(),
@@ -120,6 +120,9 @@ class Directory(object):
 
     def get_hash(self):
         return sha1(self._path.encode('utf-8')).hexdigest()
+
+    def is_valid(self):
+        return os.path.isdir(self._path)
 
     # Path for files
     def get_dbfilename(self):
