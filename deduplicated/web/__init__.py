@@ -81,11 +81,4 @@ def dirdeletefile(dirhash):
 # Run
 
 def main():
-    import sys
-    from gunicorn.app.wsgiapp import run
-    sys.argv = ['gunicorn',
-                '--access-logfile=-',
-                '--error-logfile=-',
-                '-b', '127.0.0.1:5050',
-                'deduplicated.web:app']
-    run()
+    app.run(port=5050)

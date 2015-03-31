@@ -14,7 +14,7 @@ setup(
     packages=find_packages(),
     zip_safe=False,
     extras_require={
-        'web': ['Flask', 'gunicorn'],
+        'web': ['Flask'],
     },
     package_data={
         'deduplicated.web': ['static/css/*.css', 'templates/*.html'],
