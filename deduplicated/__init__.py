@@ -43,6 +43,7 @@ def sha1_file(filename):
 
 
 def str_size(size):
+    size = float(size)
     if size < 2 ** 10:
         return '%d B' % size
     if size < 2 ** 20:
