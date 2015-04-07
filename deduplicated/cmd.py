@@ -10,13 +10,18 @@ from __future__ import unicode_literals
 import argparse
 import sys
 
-from . import Directory, str_size
+from . import Directory, directory_list, str_size
 
 
 # Argument parser
 
 parser = argparse.ArgumentParser(prog='deduplicated')
 subparsers = parser.add_subparsers(help='actions')
+
+# list command
+parser_list = subparsers.add_parser('list',
+                                    help='list directories')
+parser_list.add_argument('list', action='store_true', default=False)
 
 # update command
 parser_update = subparsers.add_parser('update',
@@ -48,6 +53,28 @@ parse_delindir.add_argument('delindir', nargs=1)
 
 # Utils
 
+def print_directories(directories):
+    rows = [(str(directory),
+             str(directory.get_lastupdate()) + ('i' if not directory.is_completed() else ''),
+             str(directory.get_duplicated_hash()),
+             str(directory.get_duplicated_files()),
+             str_size(directory.get_duplicated_size()))
+            for directory in directories]
+    header = 'Directory', 'Last update', 'Hashs', 'Files', 'Size'
+    sizes = [max(len(header[i]), *[len(row[i]) for row in rows]) for i in range(len(header))]
+    print('%-*s  %-*s  %-*s  %-*s  %-*s' % (sizes[0], header[0],
+                                            sizes[1], header[1],
+                                            sizes[2], header[2],
+                                            sizes[3], header[3],
+                                            sizes[4], header[4]))
+    for row in rows:
+        print('%-*s  %-*s  %*s  %*s  %*s' % (sizes[0], row[0],
+                                             sizes[1], row[1],
+                                             sizes[2], row[2],
+                                             sizes[3], row[3],
+                                             sizes[4], row[4]))
+
+
 def print_update_tree(directory):
     print('==> Update tree (%s): ' % directory, end='')
     print('+%d  ~%d  -%d' % directory.update_tree())
@@ -73,6 +100,12 @@ def print_duplicated(directory):
 
 def main():
     args = parser.parse_args()
+
+    if hasattr(args, 'list'):
+        directories = [Directory(dirname) for _, dirname in directory_list()]
+        directories.sort(key=lambda x: str(x).lower())
+        print_directories(directories)
+        sys.exit(0)
 
     if hasattr(args, 'update'):
         for dirname in args.update:
