@@ -35,7 +35,7 @@
       </form>
     </section>
 
-    <form method="post" action="/dir/{{ directory.get_hash() }}/deletefile">
+    <form method="post" action="/dir/{{ directory.get_hash() }}/deletefile" onsubmit="return confirm('Delete selected files?')">
       <table class="dirlist">
         <thead>
           <tr>
