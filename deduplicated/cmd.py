@@ -39,6 +39,12 @@ parser_indir = subparsers.add_parser('indir',
 parser_indir.add_argument('indir', nargs=1)
 parser_indir.add_argument('directory', nargs='+')
 
+# delindir command
+parse_delindir = subparsers.add_parser('delindir',
+                                       help='delete duplicated files in directory')
+parse_delindir.add_argument('directory', nargs=1)
+parse_delindir.add_argument('delindir', nargs=1)
+
 
 # Utils
 
@@ -101,3 +107,11 @@ def main():
             sys.exit(0)
         else:
             sys.exit(1)
+
+    if hasattr(args, 'delindir'):
+        delindir = args.delindir[0]
+        if not delindir.endswith('/'):
+            delindir += '/'
+        directory = Directory(args.directory[0])
+        directory.delete_duplicated_indir(delindir)
+        sys.exit(0)

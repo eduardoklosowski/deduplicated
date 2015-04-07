@@ -197,6 +197,12 @@ class Directory(object):
             os.remove(os.path.join(self._path, filename))
             self.save_database()
 
+    def delete_duplicated_indir(self, dirname):
+        for _, _, files in self.get_duplicated():
+            for filename in files:
+                if filename.startswith(dirname):
+                    self.delete_file(filename)
+
     def list_files(self, dirname=''):
         path = os.path.join(self._path, dirname)
         follow_link = self.is_option_follow_link()
