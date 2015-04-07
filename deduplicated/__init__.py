@@ -20,7 +20,7 @@ except ImportError:
     from ConfigParser import ConfigParser
 
 if sys.version_info[0] == 2:
-    reload(sys)
+    reload(sys)  # NOQA
     sys.setdefaultencoding('utf-8')
 
 
