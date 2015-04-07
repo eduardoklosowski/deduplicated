@@ -43,7 +43,7 @@
             {% for dirhash, directory in directories %}
               <tr>
                 <td><a href="/dir/{{ dirhash }}">{{ directory }}</a></td>
-                <td>{{ directory.get_lastupdate()|default('-', true) }}</td>
+                <td>{{ directory.get_lastupdate()|default('-', true) }}{% if not directory.is_completed() %} <small>[Incomplete]</small>{% endif %}</td>
                 <td class="dirduplicatedhash">{{ directory.get_duplicated_hash() }}</td>
                 <td class="dirduplicatedfiles">{{ directory.get_duplicated_files() }}</td>
                 <td class="dirduplicatedsize">{{ directory.get_duplicated_size()|str_size }}</td>

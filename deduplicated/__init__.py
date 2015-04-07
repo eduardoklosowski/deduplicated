@@ -180,6 +180,10 @@ class Directory(object):
             self._meta.write(fp)
 
     # Utils
+    def is_completed(self):
+        self._db.execute('SELECT count(*) FROM files WHERE exist != 2')
+        return not self._db.fetchone()[0]
+
     def is_file_in(self, filename):
         hashfile = sha1_file(filename)
         self._db.execute('SELECT filename FROM files WHERE hash = ?',
