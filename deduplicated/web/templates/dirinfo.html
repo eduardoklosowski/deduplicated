@@ -35,6 +35,14 @@
       </form>
     </section>
 
+    <section class="box">
+      <header>Check file exist in this directory</header>
+      <form class="diroption" method="post" enctype="multipart/form-data" action="/dir/{{ directory.get_hash() }}/indir">
+        <input type="file" name="file" required>
+        <button type="submit">Check</button>
+      </form>
+    </section>
+
     <form method="post" action="/dir/{{ directory.get_hash() }}/deletefile" onsubmit="return confirm('Delete selected files?')">
       <table class="dirlist">
         <thead>

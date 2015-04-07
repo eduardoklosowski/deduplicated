@@ -1,0 +1,20 @@
+{% extends 'dirlist.html' %}
+
+{% block application %}
+  <section role="application">
+    <table class="dirlist">
+      <thead>
+        <tr>
+          <th class="header">Same as "{{ name }}"</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for filename in files %}
+          <tr>
+            <td>{{ filename }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endblock %}

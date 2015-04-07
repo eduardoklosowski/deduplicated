@@ -17,6 +17,10 @@ input {
   border: .2rem solid #aaa;
 }
 
+input[type=file] {
+  border: 0;
+}
+
 textarea {
   border: .2rem solid #aaa;
 }

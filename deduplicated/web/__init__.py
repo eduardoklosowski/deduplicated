@@ -6,6 +6,7 @@
 
 from flask import Flask, redirect, render_template, request
 import jinja2
+from tempfile import NamedTemporaryFile
 
 from .. import (Directory, directory_delete, directory_get, directory_list,
                 str_size)
@@ -76,6 +77,17 @@ def dirdeletefile(dirhash):
     for filename in request.form.getlist('file'):
         directory.delete_file(filename)
     return redirect('/dir/%s' % dirhash)
+
+
+@app.route('/dir/<dirhash>/indir', methods=['post'])
+def indir(dirhash):
+    directory = directory_get(dirhash)
+    with NamedTemporaryFile(prefix='deduplicated-') as tmpfile:
+        request.files.get('file').save(tmpfile.name)
+        files = directory.is_file_in(tmpfile.name)
+    return render_template('indir.html',
+                           name=request.files.get('file').filename,
+                           files=files)
 
 
 # Run
