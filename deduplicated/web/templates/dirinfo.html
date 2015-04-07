@@ -58,8 +58,8 @@
             </tr>
             {% for filename in files %}
               <tr><td colspan="2">
-                <input type="checkbox" name="file" value="{{ filename }}">
-                {{ filename }}
+                <label><input type="checkbox" name="file" value="{{ filename }}">
+                {{ filename }}</label>
                 </td></tr>
             {% endfor %}
           {% endfor %}
