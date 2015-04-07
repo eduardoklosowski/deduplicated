@@ -126,6 +126,7 @@ def main():
             print_update_tree(directory)
             print_update_hash(directory)
             print_duplicated(directory)
+        sys.exit(0)
 
     if hasattr(args, 'indir'):
         has = False
