@@ -42,7 +42,8 @@ parser_check.add_argument('check', nargs='+')
 parser_indir = subparsers.add_parser('indir',
                                      help='check file in dir')
 parser_indir.add_argument('indir', nargs=1)
-parser_indir.add_argument('directory', nargs='+')
+parser_indir.add_argument('directory', nargs='*',
+                          help='if present check only there ones directories')
 
 # delindir command
 parse_delindir = subparsers.add_parser('delindir',
@@ -130,7 +131,8 @@ def main():
 
     if hasattr(args, 'indir'):
         has = False
-        for dirname in args.directory:
+        directories = args.directory or [i[1] for i in directory_list()]
+        for dirname in directories:
             directory = Directory(dirname)
             files = directory.is_file_in(args.indir[0])
             if files:
