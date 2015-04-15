@@ -66,6 +66,9 @@ def print_directories(directories):
              str(directory.get_duplicated_files()),
              str_size(directory.get_duplicated_size()))
             for directory in directories]
+    if not rows:
+        return
+
     header = 'Directory', 'Last update', 'Hashs', 'Files', 'Size'
     sizes = [max(len(header[i]), *[len(row[i]) for row in rows]) for i in range(len(header))]
     print('%-*s  %-*s  %-*s  %-*s  %-*s' % (sizes[0], header[0],
