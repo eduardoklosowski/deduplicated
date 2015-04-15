@@ -10,7 +10,7 @@ from __future__ import unicode_literals
 import argparse
 import sys
 
-from . import Directory, directory_list, str_size
+from . import Directory, directory_delete, directory_list, str_size
 
 
 # Argument parser
@@ -37,6 +37,11 @@ parser_duplicated.add_argument('duplicated', nargs='+')
 parser_check = subparsers.add_parser('check',
                                      help='update and duplicated')
 parser_check.add_argument('check', nargs='+')
+
+# delete command
+parser_delete = subparsers.add_parser('delete',
+                                      help='delete directory')
+parser_delete.add_argument('delete', nargs='+')
 
 # indir command
 parser_indir = subparsers.add_parser('indir',
@@ -128,6 +133,11 @@ def main():
             print_update_hash(directory)
             print_duplicated(directory)
         sys.exit(0)
+
+    if hasattr(args, 'delete'):
+        for dirname in args.delete:
+            directory = Directory(dirname)
+            directory_delete(directory.get_hash())
 
     if hasattr(args, 'indir'):
         has = False
