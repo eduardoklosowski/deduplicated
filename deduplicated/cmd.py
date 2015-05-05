@@ -16,45 +16,51 @@ from . import Directory, directory_delete, directory_list, str_size
 # Argument parser
 
 parser = argparse.ArgumentParser(prog='deduplicated')
-subparsers = parser.add_subparsers(help='actions')
+subparsers = parser.add_subparsers(dest='action')
 
 # list command
 parser_list = subparsers.add_parser('list',
                                     help='list directories')
-parser_list.add_argument('list', action='store_true', default=False)
 
 # update command
 parser_update = subparsers.add_parser('update',
-                                      help='update directory information')
-parser_update.add_argument('update', nargs='+')
+                                      help='update directories informations')
+parser_update.add_argument('directory', nargs='*',
+                           help='list of directories, if not present use all')
 
 # duplicated command
 parser_duplicated = subparsers.add_parser('duplicated',
-                                          help='list duplicated')
-parser_duplicated.add_argument('duplicated', nargs='+')
+                                          help='list duplicated files in directories')
+parser_duplicated.add_argument('directory', nargs='*',
+                               help='list of directories, if not present use all')
 
 # check command
 parser_check = subparsers.add_parser('check',
-                                     help='update and duplicated')
-parser_check.add_argument('check', nargs='+')
+                                     help='update and duplicated directories')
+parser_check.add_argument('directory', nargs='*',
+                          help='list of directories, if not present use all')
 
 # delete command
 parser_delete = subparsers.add_parser('delete',
-                                      help='delete directory')
-parser_delete.add_argument('delete', nargs='+')
+                                      help='delete directory information')
+parser_delete.add_argument('directory', nargs='+',
+                           help='list of directories')
 
 # indir command
 parser_indir = subparsers.add_parser('indir',
-                                     help='check file in dir')
-parser_indir.add_argument('indir', nargs=1)
+                                     help='check file exists in directories')
+parser_indir.add_argument('file',
+                          help='file for check')
 parser_indir.add_argument('directory', nargs='*',
-                          help='if present check only there ones directories')
+                          help='list of directories, if not present use all')
 
 # delindir command
 parse_delindir = subparsers.add_parser('delindir',
                                        help='delete duplicated files in directory')
-parse_delindir.add_argument('directory', nargs=1)
-parse_delindir.add_argument('delindir', nargs=1)
+parse_delindir.add_argument('directory', nargs=1,
+                            help='directory information')
+parse_delindir.add_argument('delindir',
+                            help='subdirectory for delete')
 
 
 # Utils
@@ -110,44 +116,46 @@ def print_duplicated(directory):
 def main():
     args = parser.parse_args()
 
-    if hasattr(args, 'list'):
+    if 'directory' in args and not args.directory:
+        args.directory = [dirname for _, dirname in directory_list()]
+
+    if args.action == 'list':
         directories = [Directory(dirname) for _, dirname in directory_list()]
         directories.sort(key=lambda x: str(x).lower())
         print_directories(directories)
         sys.exit(0)
 
-    if hasattr(args, 'update'):
-        for dirname in args.update:
+    if args.action == 'update':
+        for dirname in args.directory:
             directory = Directory(dirname)
             print_update_tree(directory)
             print_update_hash(directory)
         sys.exit(0)
 
-    if hasattr(args, 'duplicated'):
-        for dirname in args.duplicated:
+    if args.action == 'duplicated':
+        for dirname in args.directory:
             directory = Directory(dirname)
             print_duplicated(directory)
         sys.exit(0)
 
-    if hasattr(args, 'check'):
-        for dirname in args.check:
+    if args.action == 'check':
+        for dirname in args.directory:
             directory = Directory(dirname)
             print_update_tree(directory)
             print_update_hash(directory)
             print_duplicated(directory)
         sys.exit(0)
 
-    if hasattr(args, 'delete'):
-        for dirname in args.delete:
+    if args.action == 'delete':
+        for dirname in args.directory:
             directory = Directory(dirname)
             directory_delete(directory.get_hash())
 
-    if hasattr(args, 'indir'):
+    if args.action == 'indir':
         has = False
-        directories = args.directory or [i[1] for i in directory_list()]
-        for dirname in directories:
+        for dirname in args.directory:
             directory = Directory(dirname)
-            files = directory.is_file_in(args.indir[0])
+            files = directory.is_file_in(args.file)
             if files:
                 has = True
                 for filename in files:
@@ -157,8 +165,8 @@ def main():
         else:
             sys.exit(1)
 
-    if hasattr(args, 'delindir'):
-        delindir = args.delindir[0]
+    if args.action == 'delindir':
+        delindir = args.delindir
         if not delindir.endswith('/'):
             delindir += '/'
         directory = Directory(args.directory[0])
