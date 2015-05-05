@@ -67,7 +67,7 @@ parse_delindir.add_argument('delindir',
 
 def print_directories(directories):
     rows = [(str(directory),
-             str(directory.get_lastupdate()) + ('i' if not directory.is_completed() else ''),
+             str(directory.get_lastupdate() or '') + ('i' if not directory.is_completed() else ''),
              str(directory.get_duplicated_hash()),
              str(directory.get_duplicated_files()),
              str_size(directory.get_duplicated_size()))
@@ -120,7 +120,7 @@ def main():
         args.directory = [dirname for _, dirname in directory_list()]
 
     if args.action == 'list':
-        directories = [Directory(dirname) for _, dirname in directory_list()]
+        directories = [Directory(dirname, checkvalid=False) for _, dirname in directory_list()]
         directories.sort(key=lambda x: str(x).lower())
         print_directories(directories)
         sys.exit(0)
@@ -148,7 +148,7 @@ def main():
 
     if args.action == 'delete':
         for dirname in args.directory:
-            directory = Directory(dirname)
+            directory = Directory(dirname, checkvalid=False)
             directory_delete(directory.get_hash())
 
     if args.action == 'indir':
