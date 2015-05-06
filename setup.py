@@ -23,9 +23,7 @@ setup(
     license='MIT',
     url='https://github.com/eduardoklosowski/deduplicated',
 
-    package_data={
-        'deduplicated.web': ['static/css/*.css', 'templates/*.html'],
-    },
+    include_package_data=True,
     zip_safe=False,
 
     entry_points={
