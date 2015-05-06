@@ -10,13 +10,15 @@ from __future__ import unicode_literals
 import argparse
 import sys
 
-from . import Directory, directory_delete, directory_list, str_size
+from . import __version__, Directory, directory_delete, directory_list, str_size
 
 
 # Argument parser
 
 parser = argparse.ArgumentParser(prog='deduplicated')
 subparsers = parser.add_subparsers(dest='action')
+
+parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
 # list command
 parser_list = subparsers.add_parser('list',
@@ -165,3 +167,5 @@ def main():
         directory = Directory(args.directory[0])
         directory.delete_duplicated_indir(delindir)
         sys.exit(0)
+
+    parser.print_usage()
