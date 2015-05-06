@@ -26,7 +26,7 @@ if sys.version_info[0] == 2:
 
 # Global Vars
 
-__version__ = '0.1.dev0'
+__version__ = '1.0.dev0'
 CACHE_DIR = os.path.join(os.path.expanduser('~'), '.deduplicated')
 
 
