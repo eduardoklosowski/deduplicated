@@ -8,8 +8,7 @@ from flask import Flask, redirect, render_template, request
 import jinja2
 from tempfile import NamedTemporaryFile
 
-from .. import (Directory, directory_delete, directory_get, directory_list,
-                str_size)
+from .. import Directory, directory_by_hash, directory_delete, directory_list, str_size
 
 
 # Init app
@@ -23,9 +22,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def dirlist():
-    directories = [(d[0], Directory(d[1], checkvalid=False))
-                   for d in directory_list()]
-    directories.sort(key=lambda d: str(d[1]).lower())
+    directories = [(d[0], Directory(d[1], checkvalid=False)) for d in directory_list(hashid=True)]
     return render_template('dirlist.html', directories=directories)
 
 
@@ -40,12 +37,12 @@ def diradd():
 @app.route('/dir/<dirhash>')
 def dirinfo(dirhash):
     return render_template('dirinfo.html',
-                           directory=directory_get(dirhash, checkvalid=False))
+                           directory=directory_by_hash(dirhash, checkvalid=False))
 
 
 @app.route('/dir/<dirhash>/option', methods=['post'])
 def diroption(dirhash):
-    directory = directory_get(dirhash)
+    directory = directory_by_hash(dirhash)
     directory.set_option_follow_link('followlink' in request.form)
     directory.save_meta()
     directory.exclude = request.form.get('exclude', '').splitlines()
@@ -55,7 +52,7 @@ def diroption(dirhash):
 
 @app.route('/dir/<dirhash>/update')
 def dirupdate(dirhash):
-    directory = directory_get(dirhash)
+    directory = directory_by_hash(dirhash)
     outtree = directory.update_tree()
     outhash = list(directory.hash_for_update())
     [directory.update_hash(i) for i in outhash]
@@ -73,7 +70,7 @@ def dirdelete(dirhash):
 
 @app.route('/dir/<dirhash>/deletefile', methods=['post'])
 def dirdeletefile(dirhash):
-    directory = directory_get(dirhash)
+    directory = directory_by_hash(dirhash)
     for filename in request.form.getlist('file'):
         directory.delete_file(filename)
     return redirect('/dir/%s' % dirhash)
@@ -81,7 +78,7 @@ def dirdeletefile(dirhash):
 
 @app.route('/dir/<dirhash>/indir', methods=['post'])
 def indir(dirhash):
-    directory = directory_get(dirhash)
+    directory = directory_by_hash(dirhash)
     with NamedTemporaryFile(prefix='deduplicated-') as tmpfile:
         request.files.get('file').save(tmpfile.name)
         files = directory.is_file_in(tmpfile.name)
