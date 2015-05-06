@@ -67,7 +67,7 @@ parse_delindir.add_argument('delindir',
 
 def print_directories(directories):
     rows = [(str(directory),
-             str(directory.get_lastupdate() or '') + ('i' if not directory.is_completed() else ''),
+             str(directory.get_lastupdate() or '-') + ('i' if not directory.is_completed() else ''),
              str(directory.get_duplicated_hash()),
              str(directory.get_duplicated_files()),
              str_size(directory.get_duplicated_size()))
@@ -77,17 +77,11 @@ def print_directories(directories):
 
     header = 'Directory', 'Last update', 'Hashs', 'Files', 'Size'
     sizes = [max(len(header[i]), *[len(row[i]) for row in rows]) for i in range(len(header))]
-    print('%-*s  %-*s  %-*s  %-*s  %-*s' % (sizes[0], header[0],
-                                            sizes[1], header[1],
-                                            sizes[2], header[2],
-                                            sizes[3], header[3],
-                                            sizes[4], header[4]))
+    print('%-*s  %-*s  %-*s  %-*s  %-*s' % (sizes[0], header[0], sizes[1], header[1], sizes[2], header[2],
+                                            sizes[3], header[3], sizes[4], header[4]))
     for row in rows:
-        print('%-*s  %-*s  %*s  %*s  %*s' % (sizes[0], row[0],
-                                             sizes[1], row[1],
-                                             sizes[2], row[2],
-                                             sizes[3], row[3],
-                                             sizes[4], row[4]))
+        print('%-*s  %-*s  %*s  %*s  %*s' % (sizes[0], row[0], sizes[1], row[1], sizes[2], row[2],
+                                             sizes[3], row[3], sizes[4], row[4]))
 
 
 def print_update_tree(directory):
@@ -102,7 +96,7 @@ def print_update_hash(directory):
 
 
 def print_duplicated(directory):
-    print('==> Duplicated (%s):' % str(directory))
+    print('==> Duplicated (%s):' % directory)
     for hashfile, size, files in directory.get_duplicated():
         print('%s [%s]' % (str_size(size), hashfile))
         print('    %s' % '\n    '.join(files))
@@ -117,11 +111,10 @@ def main():
     args = parser.parse_args()
 
     if 'directory' in args and not args.directory:
-        args.directory = [dirname for _, dirname in directory_list()]
+        args.directory = directory_list()
 
     if args.action == 'list':
-        directories = [Directory(dirname, checkvalid=False) for _, dirname in directory_list()]
-        directories.sort(key=lambda x: str(x).lower())
+        directories = [Directory(dirname, checkvalid=False) for dirname in directory_list()]
         print_directories(directories)
         sys.exit(0)
 

@@ -7,7 +7,6 @@
 from __future__ import unicode_literals
 
 from datetime import datetime
-from glob import glob
 from hashlib import sha1
 import os
 import sqlite3
@@ -57,25 +56,31 @@ def str_size(size):
 
 # Directory
 
-def directory_delete(hashcache):
-    for filename in glob(os.path.join(CACHE_DIR, hashcache + '.*')):
-        os.remove(filename)
-
-
-def directory_get(hashcache, checkvalid=True):
+def directory_by_hash(hashid, checkvalid=True):
     config = ConfigParser()
-    if not config.read([os.path.join(CACHE_DIR, hashcache + '.meta')]):
+    if not config.read([os.path.join(CACHE_DIR, hashid + '.meta')]):
         raise IOError('hash directory not found')
     return Directory(config.get('META', 'path'), checkvalid=checkvalid)
 
 
-def directory_list():
-    for filename in os.listdir(CACHE_DIR):
-        if not filename.endswith('.meta'):
-            continue
+def directory_delete(hashid):
+    for filename in [filename for filename in os.listdir(CACHE_DIR) if filename.startswith(hashid)]:
+        os.remove(os.path.join(CACHE_DIR, filename))
+
+
+def directory_list(hashid=False):
+    dirlist = []
+    for filename in [filename for filename in os.listdir(CACHE_DIR) if filename.endswith('.meta')]:
         meta = ConfigParser()
         meta.read([os.path.join(CACHE_DIR, filename)])
-        yield filename[:-5], meta.get('META', 'path')
+        path = meta.get('META', 'path')
+        if hashid:
+            dirlist.append((filename[:-5], path))
+        else:
+            dirlist.append(path)
+    if hashid:
+        return sorted(dirlist, key=lambda x: x[1].lower())
+    return sorted(dirlist, key=lambda x: x.lower())
 
 
 class Directory(object):
@@ -85,10 +90,7 @@ class Directory(object):
         if checkvalid and not self.is_valid():
             raise IOError('%s is not valid directory' % path)
 
-        self._hashfile = os.path.join(
-            CACHE_DIR,
-            self.get_hash(),
-        )
+        self._hashfile_prefix = os.path.join(CACHE_DIR, self.get_hash())
 
         self._meta = ConfigParser()
         if os.path.exists(self.get_metafilename()):
@@ -118,8 +120,7 @@ class Directory(object):
         self._conn = sqlite3.connect(self.get_dbfilename())
         self._db = self._conn.cursor()
         self._db.execute('CREATE TABLE IF NOT EXISTS files '
-                         '(filename TEXT PRIMARY KEY, mtime FLOAT, size INT, '
-                         'hash TEXT, exist INT)')
+                         '(filename TEXT PRIMARY KEY, mtime FLOAT, size INT, hash TEXT, exist INT)')
 
     def __str__(self):
         return self._path
@@ -132,13 +133,13 @@ class Directory(object):
 
     # Path for files
     def get_dbfilename(self):
-        return self._hashfile + '.db'
+        return self._hashfile_prefix + '.db'
 
     def get_excludefilename(self):
-        return self._hashfile + '.exclude'
+        return self._hashfile_prefix + '.exclude'
 
     def get_metafilename(self):
-        return self._hashfile + '.meta'
+        return self._hashfile_prefix + '.meta'
 
     # Database
     def save_database(self):
@@ -166,11 +167,10 @@ class Directory(object):
         return None
 
     def now_lastupdate(self):
-        return self._meta.set('META', 'lastupdate',
-                              datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        return self._meta.set('META', 'lastupdate', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
     def set_option_follow_link(self, value):
-        self._meta.set('options', 'follow_link', str(value))
+        self._meta.set('options', 'follow_link', 'yes' if value else 'no')
 
     def is_option_follow_link(self):
         return self._meta.getboolean('options', 'follow_link')
@@ -186,10 +186,8 @@ class Directory(object):
 
     def is_file_in(self, filename):
         hashfile = sha1_file(filename)
-        self._db.execute('SELECT filename FROM files WHERE hash = ?',
-                         (hashfile,))
-        return [os.path.join(self._path, row[0])
-                for row in self._db.fetchall()]
+        self._db.execute('SELECT filename FROM files WHERE hash = ?', (hashfile,))
+        return [os.path.join(self._path, row[0]) for row in self._db.fetchall()]
 
     def delete_file(self, filename):
         self._db.execute('DELETE FROM files WHERE filename = ?', (filename,))
@@ -199,9 +197,8 @@ class Directory(object):
 
     def delete_duplicated_indir(self, dirname):
         for _, _, files in self.get_duplicated():
-            for filename in files:
-                if filename.startswith(dirname):
-                    self.delete_file(filename)
+            for filename in [filename for filename in files if filename.startswith(dirname)]:
+                self.delete_file(filename)
 
     def list_files(self, dirname=''):
         path = os.path.join(self._path, dirname)
@@ -232,11 +229,13 @@ class Directory(object):
         d_hash = 0
         d_files = 0
         d_size = 0
-        for step in self.get_duplicated():
+
+        for hashfile, size, files in self.get_duplicated():
             d_hash += 1
-            files = len(step[2])
-            d_files += files
-            d_size += (files - 1) * step[1]
+            files_len = len(files)
+            d_files += files_len
+            d_size += (files_len - 1) * size
+
         self._meta.set('duplicated', 'hash', str(d_hash))
         self._meta.set('duplicated', 'files', str(d_files))
         self._meta.set('duplicated', 'size', str(d_size))
@@ -248,29 +247,25 @@ class Directory(object):
         update = 0
         self._db.execute('UPDATE files SET exist = 0')
         for partial_filename, mtime, size in self.list_files():
-            self._db.execute('SELECT mtime, size FROM files '
-                             'WHERE filename = ?', (partial_filename,))
+            self._db.execute('SELECT mtime, size FROM files WHERE filename = ?', (partial_filename,))
             row = self._db.fetchone()
 
             # New file
             if row is None:
-                self._db.execute('INSERT INTO files (filename, mtime, size, '
-                                 'hash, exist) VALUES (?, NULL, ?, NULL, 1)',
+                self._db.execute('INSERT INTO files (filename, mtime, size, hash, exist) VALUES (?, NULL, ?, NULL, 1)',
                                  (partial_filename, size))
                 insert += 1
                 continue
 
             # Update file
             if mtime != row[0] or size != row[1]:
-                self._db.execute('UPDATE files SET mtime = NULL, size = ?, '
-                                 'hash = NULL, exist = 1 WHERE filename = ?',
+                self._db.execute('UPDATE files SET mtime = NULL, size = ?, hash = NULL, exist = 1 WHERE filename = ?',
                                  (size, partial_filename))
                 update += 1
                 continue
 
             # Unmodified file
-            self._db.execute('UPDATE files SET exist = 2 WHERE filename = ?',
-                             (partial_filename,))
+            self._db.execute('UPDATE files SET exist = 2 WHERE filename = ?', (partial_filename,))
 
         self._db.execute('DELETE FROM files WHERE exist = 0')
         delete = self._db.rowcount
@@ -288,19 +283,15 @@ class Directory(object):
     def update_hash(self, filename):
         abs_filename = os.path.join(str(self), filename)
         stat = os.stat(abs_filename)
-        self._db.execute('UPDATE files SET mtime = ?, size = ?, '
-                         'hash = ?, exist = 2 WHERE filename = ?',
-                         (stat.st_mtime, stat.st_size,
-                          sha1_file(abs_filename), filename))
+        self._db.execute('UPDATE files SET mtime = ?, size = ?, hash = ?, exist = 2 WHERE filename = ?',
+                         (stat.st_mtime, stat.st_size, sha1_file(abs_filename), filename))
         self.save_database()
 
     def get_duplicated(self):
-        self._db.execute('SELECT hash, COUNT(hash) FROM files GROUP BY hash '
-                         'ORDER BY size ASC')
+        self._db.execute('SELECT hash, COUNT(hash) FROM files GROUP BY hash ORDER BY size ASC')
         for row in self._db.fetchall():
             if row[1] > 1:
-                self._db.execute('SELECT filename, size FROM files '
-                                 'WHERE hash = ?', (row[0],))
+                self._db.execute('SELECT filename, size FROM files WHERE hash = ?', (row[0],))
                 files = self._db.fetchall()
                 yield row[0], files[0][1], [f[0] for f in files]
 
