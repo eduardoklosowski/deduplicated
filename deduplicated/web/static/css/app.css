@@ -12,27 +12,6 @@ a {
   color: #666;
 }
 
-input {
-  height: 2rem;
-  border: .2rem solid #aaa;
-}
-
-input[type=file] {
-  border: 0;
-}
-
-textarea {
-  border: .2rem solid #aaa;
-}
-
-button {
-  height: 2.6rem;
-  padding: .1rem .6rem;
-  border: .2rem solid #444;
-  background-color: #789;
-  color: #fff;
-}
-
 header {
   padding: .5rem 1rem;
   background-color: #789;
@@ -45,60 +24,49 @@ header a {
   text-decoration: none;
 }
 
-header > h1 {
+h1 {
   margin: 0;
   font-size: 2.5rem;
 }
 
+ul {
+  padding-left: 2rem;
+}
+
+.text-right {
+  text-align: right;
+}
+
+
+/* Form */
+
+input,
+textarea {
+  border: .2rem solid #aaa;
+}
+
+input[type=file] {
+  border: 0;
+}
+
+input {
+  height: 2rem;
+}
+
+button {
+  height: 2.6rem;
+  padding: .1rem .6rem;
+  border: .2rem solid #444;
+  background-color: #789;
+  color: #fff;
+}
+
+
+/* Page */
+
 section[role=application] {
   margin: 1rem;
   font-size: 1.6rem;
-}
-
-section[class=box] {
-  margin-bottom: 1rem;
-  border: .2rem solid #aaa;
-  background-color: #def;
-}
-
-ul[class=actions] {
-  margin: 1rem 0;
-}
-
-.diradd {
-  padding: 1rem;
-  text-align: center;
-}
-
-.diroption {
-  margin: 1rem;
-}
-
-.dirlist {
-  width: 100%;
-  margin-bottom: 1rem;
-}
-
-.dirlist th {
-  background-color: #def;
-}
-
-.dirlist th.header {
-  background-color: #789;
-  color: #fff;
-  font-weight: bold;
-}
-
-.dirlist th,
-.dirlist td {
-  padding: .5rem;
-  border: .2rem solid #aaa;
-}
-
-.dirlist .dirduplicatedhash,
-.dirlist .dirduplicatedfiles,
-.dirlist .dirduplicatedsize {
-  text-align: right;
 }
 
 .dirinfo {
@@ -116,13 +84,36 @@ ul[class=actions] {
   font-weight: bold;
 }
 
-.dirstatus {
-  margin: 1rem 0;
-  padding: 0;
-  text-align: center;
-  list-style: none;
+.box {
+  margin-bottom: 1rem;
+  border: .2rem solid #aaa;
+  background-color: #def;
 }
 
-.dirstatus li {
-  display: inline;
+.box > .content {
+  margin: 1rem;
+}
+
+.box.table {
+  border: 0;
+  background-color: #fff;
+}
+
+.box.table > header {
+  border: .2rem solid #aaa;
+  border-bottom: 0;
+}
+
+table.list {
+  width: 100%;
+}
+
+table.list th,
+table.list td {
+  padding: .5rem;
+  border: .2rem solid #aaa;
+}
+
+table.list th {
+  background-color: #def;
 }

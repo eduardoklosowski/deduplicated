@@ -16,41 +16,41 @@
       <section role="application">
         <section class="box">
           <header>Add Directory</header>
-          <form class="diradd" method="post" action="dir/add">
+          <form class="content diradd" method="post" action="dir/add">
             Directory:
             <input type="text" name="directory">
             <button type="submit">Add</button>
           </form>
         </section>
 
-        <table class="dirlist">
-          <thead>
-            <tr>
-              <th class="header" colspan="5">Directories</th>
-            </tr>
-            <tr>
-              <th rowspan="2">Directory</th>
-              <th rowspan="2">Last Update</th>
-              <th colspan="3">Duplicated</th>
-            </tr>
-            <tr>
-              <th>Hash</th>
-              <th>Files</th>
-              <th>Size</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for dirhash, directory in directories %}
+        <section class="box table">
+          <header>Directories</header>
+          <table class="list">
+            <thead>
               <tr>
-                <td><a href="/dir/{{ dirhash }}">{{ directory }}</a></td>
-                <td>{{ directory.get_lastupdate()|default('-', true) }}{% if not directory.is_completed() %} <small>[Incomplete]</small>{% endif %}</td>
-                <td class="dirduplicatedhash">{{ directory.get_duplicated_hash() }}</td>
-                <td class="dirduplicatedfiles">{{ directory.get_duplicated_files() }}</td>
-                <td class="dirduplicatedsize">{{ directory.get_duplicated_size()|str_size }}</td>
+                <th rowspan="2">Directory</th>
+                <th rowspan="2">Last Update</th>
+                <th colspan="3">Duplicated</th>
               </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+              <tr>
+                <th>Hash</th>
+                <th>Files</th>
+                <th>Size</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for directory in directories %}
+                <tr>
+                  <td><a href="/dir/{{ directory.get_hash() }}">{{ directory }}</a></td>
+                  <td>{{ directory.get_lastupdate()|default('-', true) }}{% if not directory.is_completed() %} <small>[Incomplete]</small>{% endif %}</td>
+                  <td class="text-right">{{ directory.get_duplicated_hash() }}</td>
+                  <td class="text-right">{{ directory.get_duplicated_files() }}</td>
+                  <td class="text-right">{{ directory.get_duplicated_size()|str_size }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </section>
       </section>
     {% endblock %}
   </body>

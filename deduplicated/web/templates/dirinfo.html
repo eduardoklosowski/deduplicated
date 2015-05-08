@@ -17,7 +17,7 @@
 
     <section class="box">
       <header>Actions</header>
-      <ul class="actions">
+      <ul class="content">
         <li><a href="/dir/{{ directory.get_hash() }}/update">Update</a></li>
         <li><a href="/dir/{{ directory.get_hash() }}/delete" onclick="return confirm('Delete this directory cache?')">Delete</a></li>
       </ul>
@@ -25,8 +25,8 @@
 
     <section class="box">
       <header>Options</header>
-      <form class="diroption" method="post" action="/dir/{{ directory.get_hash() }}/option">
-        <ul class="actions">
+      <form class="content" method="post" action="/dir/{{ directory.get_hash() }}/option">
+        <ul>
           <li>
             <input type="checkbox" name="followlink" {% if directory.is_option_follow_link() %}checked{% endif %}>Follow Links</li>
           <li>Excludes:<textarea name="exclude">{{ directory.exclude|join('\n') }}</textarea></li>
@@ -37,35 +37,33 @@
 
     <section class="box">
       <header>Check file exist in this directory</header>
-      <form class="diroption" method="post" enctype="multipart/form-data" action="/dir/{{ directory.get_hash() }}/indir">
+      <form class="content" method="post" enctype="multipart/form-data" action="/dir/{{ directory.get_hash() }}/indir">
         <input type="file" name="file" required>
         <button type="submit">Check</button>
       </form>
     </section>
 
-    <form method="post" action="/dir/{{ directory.get_hash() }}/deletefile" onsubmit="return confirm('Delete selected files?')">
-      <table class="dirlist">
-        <thead>
-          <tr>
-            <th class="header" colspan="2">Files Duplicated</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for hashfile, size, files in directory.get_duplicated()|reverse %}
-            <tr>
-              <th>{{ size|str_size() }}</th>
-              <th>{{ hashfile }}</th>
-            </tr>
-            {% for filename in files %}
-              <tr><td colspan="2">
-                <label><input type="checkbox" name="file" value="{{ filename }}">
-                {{ filename }}</label>
-                </td></tr>
+    <section class="box table">
+      <header>Files Duplicated</header>
+      <form method="post" action="/dir/{{ directory.get_hash() }}/deletefile" onsubmit="return confirm('Delete selected files?')">
+        <table class="list">
+          <tbody>
+            {% for hashfile, size, files in directory.get_duplicated()|reverse %}
+              <tr>
+                <th>{{ size|str_size() }}</th>
+                <th>{{ hashfile }}</th>
+              </tr>
+              {% for filename in files %}
+                <tr><td colspan="2">
+                  <label><input type="checkbox" name="file" value="{{ filename }}">
+                  {{ filename }}</label>
+                  </td></tr>
+              {% endfor %}
             {% endfor %}
-          {% endfor %}
-        </tbody>
-      </table>
-      <button type="submit">Delete Files</button>
-    </form>
+          </tbody>
+        </table>
+        <button type="submit">Delete Files</button>
+      </form>
+    </section>
   </section>
 {% endblock %}

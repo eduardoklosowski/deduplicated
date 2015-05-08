@@ -22,8 +22,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def dirlist():
-    directories = [(d[0], Directory(d[1], checkvalid=False)) for d in directory_list(hashid=True)]
-    return render_template('dirlist.html', directories=directories)
+    directories = [Directory(d, checkvalid=False) for d in directory_list()]
+    return render_template('dirlist.html',
+                           directories=directories)
 
 
 @app.route('/dir/add', methods=['post'])
@@ -83,6 +84,7 @@ def indir(dirhash):
         request.files.get('file').save(tmpfile.name)
         files = directory.is_file_in(tmpfile.name)
     return render_template('indir.html',
+                           directory=directory,
                            name=request.files.get('file').filename,
                            files=files)
 
