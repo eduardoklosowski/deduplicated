@@ -68,18 +68,13 @@ def directory_delete(hashid):
         os.remove(os.path.join(CACHE_DIR, filename))
 
 
-def directory_list(hashid=False):
+def directory_list():
     dirlist = []
     for filename in [filename for filename in os.listdir(CACHE_DIR) if filename.endswith('.meta')]:
         meta = ConfigParser()
         meta.read([os.path.join(CACHE_DIR, filename)])
         path = meta.get('META', 'path')
-        if hashid:
-            dirlist.append((filename[:-5], path))
-        else:
-            dirlist.append(path)
-    if hashid:
-        return sorted(dirlist, key=lambda x: x[1].lower())
+        dirlist.append(path)
     return sorted(dirlist, key=lambda x: x.lower())
 
 
