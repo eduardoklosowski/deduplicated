@@ -145,6 +145,7 @@ def main():
         for dirname in args.directory:
             directory = Directory(dirname, checkvalid=False)
             directory_delete(directory.get_hash())
+        sys.exit(0)
 
     if args.action == 'indir':
         has = False
