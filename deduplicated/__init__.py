@@ -286,7 +286,7 @@ class Directory(object):
         self._db.execute('SELECT hash, COUNT(hash) FROM files GROUP BY hash ORDER BY size ASC')
         for row in self._db.fetchall():
             if row[1] > 1:
-                self._db.execute('SELECT filename, size FROM files WHERE hash = ?', (row[0],))
+                self._db.execute('SELECT filename, size FROM files WHERE hash = ? ORDER BY filename ASC', (row[0],))
                 files = self._db.fetchall()
                 yield row[0], files[0][1], [f[0] for f in files]
 
