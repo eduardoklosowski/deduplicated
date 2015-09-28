@@ -140,6 +140,12 @@ class Directory(object):
     def save_database(self):
         self._conn.commit()
 
+    def optimize_database(self):
+        size_orig = os.path.getsize(self.get_dbfilename())
+        self._db.execute('VACUUM')
+        size_opt = os.path.getsize(self.get_dbfilename())
+        return (size_orig, size_opt, size_orig - size_opt)
+
     # Exclude
     def save_exclude(self):
         with open(self.get_excludefilename(), 'w') as fp:

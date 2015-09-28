@@ -64,6 +64,12 @@ parse_delindir.add_argument('directory', nargs=1,
 parse_delindir.add_argument('delindir',
                             help='subdirectory for delete')
 
+# optimize command
+parser_optimize = subparsers.add_parser('optimize',
+                                        help='optimize cache database')
+parser_optimize.add_argument('directory', nargs='*',
+                             help='list of directories, if not present use all')
+
 
 # Utils
 
@@ -107,6 +113,10 @@ def print_duplicated(directory):
         directory.get_duplicated_files(),
         str_size(directory.get_duplicated_size()),
     ))
+
+
+def print_optimize(directory, sizes):
+    print('%s - %s (%s > %s)' % (str_size(sizes[2]), directory, str_size(sizes[0]), str_size(sizes[1])))
 
 
 def main():
@@ -167,6 +177,15 @@ def main():
             delindir += '/'
         directory = Directory(args.directory[0])
         directory.delete_duplicated_indir(delindir)
+        sys.exit(0)
+
+    if args.action == 'optimize':
+        for dirname in args.directory:
+            directory = Directory(dirname)
+            sizes = directory.optimize_database()
+            if not sizes[2]:
+                continue
+            print_optimize(directory, sizes)
         sys.exit(0)
 
     parser.print_usage()
