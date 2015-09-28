@@ -57,12 +57,12 @@ parser_indir.add_argument('directory', nargs='*',
                           help='list of directories, if not present use all')
 
 # delindir command
-parse_delindir = subparsers.add_parser('delindir',
-                                       help='delete duplicated files in directory')
-parse_delindir.add_argument('directory', nargs=1,
-                            help='directory information')
-parse_delindir.add_argument('delindir',
-                            help='subdirectory for delete')
+parser_delindir = subparsers.add_parser('delindir',
+                                        help='delete duplicated files in directory')
+parser_delindir.add_argument('directory', nargs=1,
+                             help='directory information')
+parser_delindir.add_argument('delindir',
+                             help='subdirectory for delete')
 
 # optimize command
 parser_optimize = subparsers.add_parser('optimize',
@@ -116,7 +116,7 @@ def print_duplicated(directory):
 
 
 def print_optimize(directory, sizes):
-    print('%s - %s (%s > %s)' % (str_size(sizes[2]), directory, str_size(sizes[0]), str_size(sizes[1])))
+    print('%9s - %s (%s > %s)' % (str_size(sizes[2]), directory, str_size(sizes[0]), str_size(sizes[1])))
 
 
 def main():
