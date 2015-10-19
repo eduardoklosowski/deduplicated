@@ -28,8 +28,11 @@
       <form class="content" method="post" action="/dir/{{ directory.get_hash() }}/option">
         <ul>
           <li>
-            <input type="checkbox" name="followlink" {% if directory.is_option_follow_link() %}checked{% endif %}>Follow Links</li>
-          <li>Excludes:<textarea name="exclude">{{ directory.exclude|join('\n') }}</textarea></li>
+            <input type="checkbox" name="followlink" {% if directory.is_option_follow_link() %}checked{% endif %}> Follow Links
+          </li>
+          <li>
+            Excludes: <textarea name="exclude">{{ directory.exclude|join('\n') }}</textarea>
+          </li>
         </ul>
         <button type="submit">Save</button>
       </form>

@@ -45,6 +45,11 @@ textarea {
   border: .2rem solid #aaa;
 }
 
+.box textarea {
+  width: calc(100% - 2rem);
+  height: 8rem;
+}
+
 input[type=file] {
   border: 0;
 }
