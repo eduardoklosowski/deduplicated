@@ -29,3 +29,4 @@ Check
 
 This project use:
 - `Commit Rules <https://github.com/eduardoklosowski/commit-rules>`_.
+- `EditorConfig <https://editorconfig.org/>`_.
