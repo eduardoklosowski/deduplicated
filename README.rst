@@ -22,3 +22,10 @@ Exemple of use
 
   # Start web version, connect http://127.0.0.1:5050
   $ deduplicated-web
+
+
+Check
+-----
+
+This project use:
+- `Commit Rules <https://github.com/eduardoklosowski/commit-rules>`_.
