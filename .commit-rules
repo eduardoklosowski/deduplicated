@@ -1,0 +1,3 @@
+Commit Files: git diff --cached --name-only | egrep '\.py[cod]$|~$' && exit 1 || :
+Git Check: git diff --cached --check
+flake8: flake8
